@@ -37,6 +37,12 @@ for top_k in np.arange(1000, 11000, 1000):
             __sets[name] = (lambda split=split, year=year, top_k=top_k:
                     _selective_search_IJCV_top_k(split, year, top_k))
 
+# Set up inria_<split> using selective search "fast" mode
+inria_devkit_path = ''
+for split in ['train', 'test']:
+    name = '{}_{}'.format('inria', split)
+    __sets[name] = (lambda split = split: datasets.inria(split, inria_devkit_path))
+
 def get_imdb(name):
     """Get an imdb (image database) by name."""
     if not __sets.has_key(name):
