@@ -124,8 +124,9 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
 
-    prototxt = os.path.join('models', NETS[args.demo_net][0], 'test.prototxt')
-    caffemodel = os.path.join('data', 'fast_rcnn_models',
+    prototxt = os.path.join(cfg.ROOT_DIR, 'models', NETS[args.demo_net][0],
+                            'test.prototxt')
+    caffemodel = os.path.join(cfg.ROOT_DIR, 'data', 'fast_rcnn_models',
                               NETS[args.demo_net][1])
 
     if not os.path.isfile(caffemodel):
@@ -136,7 +137,7 @@ if __name__ == '__main__':
         caffe.set_mode_cpu()
     else:
         caffe.set_mode_gpu()
-    caffe.set_device(args.gpu_id)
+        caffe.set_device(args.gpu_id)
     net = caffe.Net(prototxt, caffemodel, caffe.TEST)
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
