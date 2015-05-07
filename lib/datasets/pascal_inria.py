@@ -6,7 +6,7 @@
 # --------------------------------------------------------
 
 import datasets
-import datasets.pascal_voc
+import datasets.inria
 import os
 import datasets.imdb
 import xml.dom.minidom as minidom
@@ -17,33 +17,28 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 
-class pascal_voc(datasets.imdb):
-    def __init__(self, image_set, year, devkit_path=None):
-        datasets.imdb.__init__(self, 'voc_' + year + '_' + image_set)
-        self._year = year
+class inria(datasets.imdb):
+    def __init__(self, image_set, devkit_path):
+        datasets.imdb.__init__(self, image_set)
         self._image_set = image_set
-        self._devkit_path = self._get_default_path() if devkit_path is None \
-                            else devkit_path
-        self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
+        self._devkit_path = devkit_path
+        self._data_path = os.path.join(self._devkit_path, 'data')
         self._classes = ('__background__', # always index 0
-                         'aeroplane', 'bicycle', 'bird', 'boat',
-                         'bottle', 'bus', 'car', 'cat', 'chair',
-                         'cow', 'diningtable', 'dog', 'horse',
-                         'motorbike', 'person', 'pottedplant',
-                         'sheep', 'sofa', 'train', 'tvmonitor')
+                         'person')
+        self.num_classes = len(self._classes)
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
-        self._image_ext = '.jpg'
+        self._image_ext = ['.jpg', '.png']
         self._image_index = self._load_image_set_index()
         # Default to roidb handler
         self._roidb_handler = self.selective_search_roidb
 
-        # PASCAL specific config options
+        # Specific config options
         self.config = {'cleanup'  : True,
                        'use_salt' : True,
                        'top_k'    : 2000}
 
         assert os.path.exists(self._devkit_path), \
-                'VOCdevkit path does not exist: {}'.format(self._devkit_path)
+                'Devkit path does not exist: {}'.format(self._devkit_path)
         assert os.path.exists(self._data_path), \
                 'Path does not exist: {}'.format(self._data_path)
 
@@ -57,8 +52,11 @@ class pascal_voc(datasets.imdb):
         """
         Construct an image path from the image's "index" identifier.
         """
-        image_path = os.path.join(self._data_path, 'JPEGImages',
-                                  index + self._image_ext)
+        for ext in self._image_ext:
+            image_path = os.path.join(self._data_path, 'Images'
+                                  index + ext)
+            if os.path.exists(image_path):
+                break
         assert os.path.exists(image_path), \
                 'Path does not exist: {}'.format(image_path)
         return image_path
@@ -68,20 +66,14 @@ class pascal_voc(datasets.imdb):
         Load the indexes listed in this dataset's image set file.
         """
         # Example path to image set file:
-        # self._devkit_path + /VOCdevkit2007/VOC2007/ImageSets/Main/val.txt
-        image_set_file = os.path.join(self._data_path, 'ImageSets', 'Main',
+        # self._data_path + /ImageSets/val.txt
+        image_set_file = os.path.join(self._data_path, 'ImageSets', 
                                       self._image_set + '.txt')
         assert os.path.exists(image_set_file), \
                 'Path does not exist: {}'.format(image_set_file)
         with open(image_set_file) as f:
             image_index = [x.strip() for x in f.readlines()]
         return image_index
-
-    def _get_default_path(self):
-        """
-        Return the default path where PASCAL VOC is expected to be installed.
-        """
-        return os.path.join(datasets.ROOT_DIR, 'data', 'VOCdevkit' + self._year)
 
     def gt_roidb(self):
         """
@@ -96,7 +88,7 @@ class pascal_voc(datasets.imdb):
             print '{} gt roidb loaded from {}'.format(self.name, cache_file)
             return roidb
 
-        gt_roidb = [self._load_pascal_annotation(index)
+        gt_roidb = [self._load_inria_annotation(index)
                     for index in self.image_index]
         with open(cache_file, 'wb') as fid:
             cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
@@ -120,7 +112,7 @@ class pascal_voc(datasets.imdb):
             print '{} ss roidb loaded from {}'.format(self.name, cache_file)
             return roidb
 
-        if int(self._year) == 2007 or self._image_set != 'test':
+        if elf._image_set != 'test':
             gt_roidb = self.gt_roidb()
             ss_roidb = self._load_selective_search_roidb(gt_roidb)
             roidb = datasets.imdb.merge_roidbs(gt_roidb, ss_roidb)
@@ -175,7 +167,7 @@ class pascal_voc(datasets.imdb):
     def _load_selective_search_IJCV_roidb(self, gt_roidb):
         IJCV_path = os.path.abspath(os.path.join(self.cache_path, '..',
                                                  'selective_search_IJCV_data',
-                                                 'voc_' + self._year))
+                                                 self.name))
         assert os.path.exists(IJCV_path), \
                'Selective search IJCV data not found at: {}'.format(IJCV_path)
 
@@ -188,7 +180,7 @@ class pascal_voc(datasets.imdb):
 
         return self.create_roidb_from_box_list(box_list, gt_roidb)
 
-    def _load_pascal_annotation(self, index):
+    def _load_inria_annotation(self, index):
         """
         Load image and bounding boxes info from XML file in the PASCAL VOC
         format.
@@ -228,19 +220,18 @@ class pascal_voc(datasets.imdb):
                 'gt_overlaps' : overlaps,
                 'flipped' : False}
 
-    def _write_voc_results_file(self, all_boxes):
+    def _write_inria_results_file(self, all_boxes):
         use_salt = self.config['use_salt']
         comp_id = 'comp4'
         if use_salt:
             comp_id += '-{}'.format(os.getpid())
 
-        # VOCdevkit/results/VOC2007/Main/comp4-44503_det_test_aeroplane.txt
-        path = os.path.join(self._devkit_path, 'results', 'VOC' + self._year,
-                            'Main', comp_id + '_')
+        # VOCdevkit/results/comp4-44503_det_test_aeroplane.txt
+        path = os.path.join(self._devkit_path, 'results', self.name, comp_id + '_')
         for cls_ind, cls in enumerate(self.classes):
             if cls == '__background__':
                 continue
-            print 'Writing {} VOC results file'.format(cls)
+            print 'Writing {} results file'.format(cls)
             filename = path + 'det_' + self._image_set + '_' + cls + '.txt'
             with open(filename, 'wt') as f:
                 for im_ind, index in enumerate(self.image_index):
@@ -270,7 +261,7 @@ class pascal_voc(datasets.imdb):
         status = subprocess.call(cmd, shell=True)
 
     def evaluate_detections(self, all_boxes, output_dir):
-        comp_id = self._write_voc_results_file(all_boxes)
+        comp_id = self._write_inria_results_file(all_boxes)
         self._do_matlab_eval(comp_id, output_dir)
 
     def competition_mode(self, on):
@@ -282,6 +273,6 @@ class pascal_voc(datasets.imdb):
             self.config['cleanup'] = True
 
 if __name__ == '__main__':
-    d = datasets.pascal_voc('trainval', '2007')
+    d = datasets.inria('trainval', '2007')
     res = d.roidb
     from IPython import embed; embed()
