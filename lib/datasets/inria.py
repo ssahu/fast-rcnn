@@ -181,18 +181,18 @@ class inria(datasets.imdb):
 
     def _load_inria_annotation(self, index):
         """
-        Load image and bounding boxes info from XML file in the PASCAL VOC
-        format.
+        Load image and bounding boxes info from txt files of INRIAPerson.
         """
         filename = os.path.join(self._data_path, 'Annotations', index + '.txt')
         # print 'Loading: {}'.format(filename)
-        def get_data_from_tag(node, tag):
-            return node.getElementsByTagName(tag)[0].childNodes[0].data
+	if os.path.isfile(filename):        
+	    with open(filename) as f:
+	        data = f.read()
+	else:
+	    data = ''
+	import re
+	objs = re.findall('\(\d+, \d+\)[\s\-]+\(\d+, \d+\)', data)
 
-        with open(filename) as f:
-            data = minidom.parseString(f.read())
-
-        objs = data.getElementsByTagName('object')
         num_objs = len(objs)
 
         boxes = np.zeros((num_objs, 4), dtype=np.uint16)
@@ -202,12 +202,12 @@ class inria(datasets.imdb):
         # Load object bounding boxes into a data frame.
         for ix, obj in enumerate(objs):
             # Make pixel indexes 0-based
-            x1 = float(get_data_from_tag(obj, 'xmin')) - 1
-            y1 = float(get_data_from_tag(obj, 'ymin')) - 1
-            x2 = float(get_data_from_tag(obj, 'xmax')) - 1
-            y2 = float(get_data_from_tag(obj, 'ymax')) - 1
-            cls = self._class_to_ind[
-                    str(get_data_from_tag(obj, "name")).lower().strip()]
+	    coor = re.findall('\d+', obj)
+            x1 = float(coor[0])
+            y1 = float(coor[1])
+            x2 = float(coor[2])
+            y2 = float(coor[3])
+            cls = self._class_to_ind['person']
             boxes[ix, :] = [x1, y1, x2, y2]
             gt_classes[ix] = cls
             overlaps[ix, cls] = 1.0
