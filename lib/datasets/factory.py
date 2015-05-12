@@ -10,6 +10,7 @@
 __sets = {}
 
 import datasets.pascal_voc
+import datasets.inria
 import numpy as np
 
 def _selective_search_IJCV_top_k(split, year, top_k):
@@ -38,10 +39,10 @@ for top_k in np.arange(1000, 11000, 1000):
                     _selective_search_IJCV_top_k(split, year, top_k))
 
 # Set up inria_<split> using selective search "fast" mode
-inria_devkit_path = ''
+inria_devkit_path = '/home/szy/INRIA'
 for split in ['train', 'test']:
     name = '{}_{}'.format('inria', split)
-    __sets[name] = (lambda split = split: datasets.inria(split, inria_devkit_path))
+    __sets[name] = (lambda split=split: datasets.inria(split, inria_devkit_path))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""

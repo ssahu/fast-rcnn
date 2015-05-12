@@ -25,7 +25,6 @@ class inria(datasets.imdb):
         self._data_path = os.path.join(self._devkit_path, 'data')
         self._classes = ('__background__', # always index 0
                          'person')
-        self.num_classes = len(self._classes)
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = ['.jpg', '.png']
         self._image_index = self._load_image_set_index()
@@ -53,7 +52,7 @@ class inria(datasets.imdb):
         Construct an image path from the image's "index" identifier.
         """
         for ext in self._image_ext:
-            image_path = os.path.join(self._data_path, 'Images'
+            image_path = os.path.join(self._data_path, 'Images',
                                   index + ext)
             if os.path.exists(image_path):
                 break
@@ -273,6 +272,6 @@ class inria(datasets.imdb):
             self.config['cleanup'] = True
 
 if __name__ == '__main__':
-    d = datasets.inria('trainval', '2007')
+    d = datasets.inria('train', '')
     res = d.roidb
     from IPython import embed; embed()
