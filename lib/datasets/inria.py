@@ -58,7 +58,7 @@ class inria(datasets.imdb):
                 break
         assert os.path.exists(image_path), \
                 'Path does not exist: {}'.format(image_path)
-        return image_path
+	return image_path
 
     def _load_image_set_index(self):
         """
@@ -124,22 +124,23 @@ class inria(datasets.imdb):
         return roidb
 
     def _load_selective_search_roidb(self, gt_roidb):
-        filename = os.path.abspath(os.path.join(self.cache_path, '..',
-                                                'selective_search_data',
+        filename = os.path.abspath(os.path.join(self._devkit_path,
                                                 self.name + '.mat'))
         assert os.path.exists(filename), \
                'Selective search data not found at: {}'.format(filename)
-        raw_data = sio.loadmat(filename)['boxes'].ravel()
+	raw_data = sio.loadmat(filename)['all_boxes'].ravel()
 
         box_list = []
         for i in xrange(raw_data.shape[0]):
             box_list.append(raw_data[i][:, (1, 0, 3, 2)] - 1)
 
-        return self.create_roidb_from_box_list(box_list, gt_roidb)
+       	for i in xrange(len(gt_roidb)):
+	  print len(gt_roidb[i])
+	return self.create_roidb_from_box_list(box_list, gt_roidb)
 
     def selective_search_IJCV_roidb(self):
         """
-        Return the database of selective search regions of interest.
+        eturn the database of selective search regions of interest.
         Ground-truth ROIs are also included.
 
         This function loads/saves from/to a cache file to speed up future calls.
@@ -185,11 +186,8 @@ class inria(datasets.imdb):
         """
         filename = os.path.join(self._data_path, 'Annotations', index + '.txt')
         # print 'Loading: {}'.format(filename)
-	if os.path.isfile(filename):        
-	    with open(filename) as f:
-	        data = f.read()
-	else:
-	    data = ''
+	with open(filename) as f:
+            data = f.read()
 	import re
 	objs = re.findall('\(\d+, \d+\)[\s\-]+\(\d+, \d+\)', data)
 
