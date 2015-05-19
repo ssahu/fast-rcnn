@@ -205,7 +205,6 @@ class inria(datasets.imdb):
             y2 = float(coor[3])
             cls = self._class_to_ind['person']
             boxes[ix, :] = [x1, y1, x2, y2]
-	    print cls
             gt_classes[ix] = cls
             overlaps[ix, cls] = 1.0
 
