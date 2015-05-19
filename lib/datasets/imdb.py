@@ -95,10 +95,8 @@ class imdb(object):
         num_images = self.num_images
         widths = [PIL.Image.open(self.image_path_at(i)).size[0]
                   for i in xrange(num_images)]
-        print self.roidb
 	for i in xrange(num_images):
-	    print i
-	    boxes = self.roidb[i]['all_boxes'].copy()
+	    boxes = self.roidb[i]['boxes'].copy()
 	    oldx1 = boxes[:, 0].copy()
             oldx2 = boxes[:, 2].copy()
             boxes[:, 0] = widths[i] - oldx2 - 1

@@ -134,8 +134,6 @@ class inria(datasets.imdb):
         for i in xrange(raw_data.shape[0]):
             box_list.append(raw_data[i][:, (1, 0, 3, 2)] - 1)
 
-       	for i in xrange(len(gt_roidb)):
-	  print len(gt_roidb[i])
 	return self.create_roidb_from_box_list(box_list, gt_roidb)
 
     def selective_search_IJCV_roidb(self):
