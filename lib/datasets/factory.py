@@ -44,6 +44,11 @@ for split in ['train', 'test']:
     name = '{}_{}'.format('inria', split)
     __sets[name] = (lambda split=split: datasets.inria(split, inria_devkit_path))
 
+towncenter_devkit_path = '/home/szy/TownCenter'
+for split in ['test']:
+   name = '{}_{}'.format('towncenter', split)
+   __sets[name] = (lambda split=split: datasets.inria(split, towncenter_devkit_path))
+
 def get_imdb(name):
     """Get an imdb (image database) by name."""
     if not __sets.has_key(name):

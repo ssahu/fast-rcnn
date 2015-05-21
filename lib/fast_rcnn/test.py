@@ -273,6 +273,7 @@ def test_net(net, imdb):
     _t = {'im_detect' : Timer(), 'misc' : Timer()}
 
     roidb = imdb.roidb
+    print len(roidb)
     for i in xrange(num_images):
         im = cv2.imread(imdb.image_path_at(i))
         _t['im_detect'].tic()
