@@ -79,8 +79,8 @@ See https://github.com/rbgirshick/fast-rcnn/issues/11 for more details.
 In the directory **$FRCNN_ROOT**, run the following command in the shell.
 
 ```sh
- ./tools/test_net.py --gpu 1 --def models/VGG_CNN_M_1024/test.prototxt \
-    --net output/default/train/vgg_cnn_m_1024_fast_rcnn_iter_40000.caffemodel --imdb inria_train
+./tools/train_net.py --gpu 0 --solver models/VGG_CNN_M_1024/solver.prototxt \
+    --weights data/imagenet_models/VGG16.v2.caffemodel --imdb inria_train
 ```
 
 Be careful with the **imdb** argument as it specifies the dataset you will train on. Then just drink a cup of coffee and take a break to wait for the training.
