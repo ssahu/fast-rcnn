@@ -43,6 +43,8 @@ for split in ['train', 'test']:
     __sets[name] = (lambda split=split: datasets.inria(split, inria_devkit_path))
 ```
 
+See the example `inria.py` at https://github.com/EdisonResearch/fast-rcnn/blob/master/lib/datasets/inria.py.
+
 ### Run Selective Search 
 
 Modify the matlab file `selective_search.m` in the directory `$FRCNN_ROOT/selective_search`, if you do not have that directory, you could find it at https://github.com/EdisonResearch/fast-rcnn/tree/master/selective_search. 
