@@ -1,6 +1,6 @@
 # Test Fast-RCNN on Another Dataset
 
-We will illustrate how to train Fast-RCNN on another dataset in the following steps, and we will take **INRIA Person** as the example dataset.
+We will illustrate how to test Fast-RCNN on another dataset in the following steps, and we will take **INRIA Person** as the example dataset.
 
 ### Format Your Dataset
 
