@@ -1,5 +1,5 @@
-image_db = '/home/szy/TownCenter/';
-image_filenames = textread([image_db '/data/ImageSets/test.txt'], '%s', 'delimiter', '\n');
+image_db = '/home/szy/INRIA/';
+image_filenames = textread([image_db '/data/ImageSets/train.txt'], '%s', 'delimiter', '\n');
 for i = 1:length(image_filenames)
     if exist([image_db '/data/Images/' image_filenames{i} '.jpg'], 'file') == 2
 	image_filenames{i} = [image_db '/data/Images/' image_filenames{i} '.jpg'];
