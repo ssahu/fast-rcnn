@@ -10,8 +10,13 @@
 __sets = {}
 
 import datasets.pascal_voc
-import datasets.inria
+import datasets.hover
 import numpy as np
+import pdb
+
+# inria_devkit_path = '/Volumes/Data/hover-temp-data/zulu_data/downloaded_orders'
+hover_devkit_path = '/Volumes/Data/hover-temp-data/zulu_data/downloaded_orders/new_orders'
+hover_devkit_path = '/scratch/deep_learning_data/fast-rcnn-data'
 
 def _selective_search_IJCV_top_k(split, year, top_k):
     """Return an imdb that uses the top k proposals from the selective search
@@ -39,15 +44,10 @@ for top_k in np.arange(1000, 11000, 1000):
                     _selective_search_IJCV_top_k(split, year, top_k))
 
 # Set up inria_<split> using selective search "fast" mode
-inria_devkit_path = '/home/szy/INRIA'
 for split in ['train', 'test']:
-    name = '{}_{}'.format('inria', split)
-    __sets[name] = (lambda split=split: datasets.inria(split, inria_devkit_path))
-
-towncenter_devkit_path = '/home/szy/TownCenter'
-for split in ['test']:
-   name = '{}_{}'.format('towncenter', split)
-   __sets[name] = (lambda split=split: datasets.inria(split, towncenter_devkit_path))
+    name = '{}_{}'.format('hover', split)
+#     pdb.set_trace()
+    __sets[name] = (lambda split=split: datasets.hover(split, hover_devkit_path))
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""

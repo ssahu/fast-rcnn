@@ -49,7 +49,9 @@ ks = ks(1:2);
 
 % Process all images.
 all_boxes = {};
+lengths = length(image_filenames);
 for i=1:length(image_filenames)
+    display(strcat(num2str(i), '/', num2str(lengths), ' - ', image_filenames{i}));
     im = imread(image_filenames{i});
     % Resize image to canonical dimensions since proposals aren't scale invariant.
     scale = size(im, 2) / im_width;

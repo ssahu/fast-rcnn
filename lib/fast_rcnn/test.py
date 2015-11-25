@@ -275,6 +275,7 @@ def test_net(net, imdb):
     roidb = imdb.roidb
     print len(roidb)
     for i in xrange(num_images):
+        break
         im = cv2.imread(imdb.image_path_at(i))
         _t['im_detect'].tic()
         scores, boxes = im_detect(net, im, roidb[i]['boxes'])
@@ -313,6 +314,7 @@ def test_net(net, imdb):
                       _t['misc'].average_time)
 
     for j in xrange(1, imdb.num_classes):
+        break
         for i in xrange(num_images):
             inds = np.where(all_boxes[j][i][:, -1] > thresh[j])[0]
             all_boxes[j][i] = all_boxes[j][i][inds, :]

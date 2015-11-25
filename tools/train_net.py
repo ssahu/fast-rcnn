@@ -18,6 +18,7 @@ import argparse
 import pprint
 import numpy as np
 import sys
+import pdb
 
 def parse_args():
     """
@@ -44,6 +45,9 @@ def parse_args():
                         default='voc_2007_trainval', type=str)
     parser.add_argument('--rand', dest='randomize',
                         help='randomize (do not use a fixed seed)',
+                        action='store_true')
+    parser.add_argument('--cpu', dest='cpu_mode',
+                        help='Use CPU mode (overrides --gpu)',
                         action='store_true')
 
     if len(sys.argv) == 1:
@@ -72,8 +76,13 @@ if __name__ == '__main__':
 
     # set up caffe
     caffe.set_mode_gpu()
-    if args.gpu_id is not None:
-        caffe.set_device(args.gpu_id)
+    if args.gpu_id is None:
+      caffe.set_device(args.gpu_id)
+#     if args.cpu_mode:
+#       caffe.set_mode_cpu()
+#     else:
+#       caffe.set_mode_gpu()
+#       caffe.set_device(args.gpu_id)
 
     imdb = get_imdb(args.imdb_name)
     print 'Loaded dataset `{:s}` for training'.format(imdb.name)

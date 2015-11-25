@@ -8,6 +8,7 @@
 from .imdb import imdb
 from .pascal_voc import pascal_voc
 from .inria import inria
+from .hover import hover
 from . import factory
 
 import os.path as osp
@@ -40,4 +41,4 @@ def _which(program):
 if _which(MATLAB) is None:
     msg = ("MATLAB command '{}' not found. "
            "Please add '{}' to your PATH.").format(MATLAB, MATLAB)
-    raise EnvironmentError(msg)
+#     raise EnvironmentError(msg)

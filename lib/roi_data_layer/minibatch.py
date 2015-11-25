@@ -12,6 +12,7 @@ import numpy.random as npr
 import cv2
 from fast_rcnn.config import cfg
 from utils.blob import prep_im_for_blob, im_list_to_blob
+import pdb
 
 def get_minibatch(roidb, num_classes):
     """Given a roidb, construct a minibatch sampled from it."""
@@ -35,6 +36,7 @@ def get_minibatch(roidb, num_classes):
     bbox_loss_blob = np.zeros(bbox_targets_blob.shape, dtype=np.float32)
     # all_overlaps = []
     for im_i in xrange(num_images):
+#         pdb.set_trace()
         labels, overlaps, im_rois, bbox_targets, bbox_loss \
             = _sample_rois(roidb[im_i], fg_rois_per_image, rois_per_image,
                            num_classes)
